@@ -1,0 +1,43 @@
+services:
+  nginx-proxy:
+    image: nginx:1.27.5-bookworm
+    ports:
+      - "8080:80"
+  login-apache2:
+    build: "./apache2-php_img"
+    volumes:
+      - "./login:/var/www/html"
+    expose:
+      - "80"
+
+  webgl-apache2:
+    build: "./apache2-php_img"
+    volumes:
+      - "./webglapp:/var/www/html"
+    expose:
+      - "80"
+  db:
+    image: mysql:lts
+    volumes:
+      - "./mysql:/var/lib/mysql" #db persistance
+      - "./init.sql:/docker-entrypoint-initdb.d/init.sql:ro" #init file for the db
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_password
+    expose:
+      - "3306"
+    secrets:
+      - db_password
+
+  #DEBUG SERVICE
+  db_management:
+    image: phpmyadmin:apache
+    ports:
+      - "9999:80"
+    environment:
+      - PMA_HOST=db
+
+secrets:
+  db_password:
+   file: "./db_pass.txt"
+
+
