@@ -1,8 +1,13 @@
 services:
   nginx-proxy:
     image: nginx:1.27.5-bookworm
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
     ports:
       - "8080:80"
+    environment:
+      - NGINX_PORT=80
+  
   login-apache2:
     build: "./apache2-php_img"
     volumes:
@@ -16,7 +21,7 @@ services:
       - "./webglapp:/var/www/html"
     expose:
       - "80"
-  db:
+  db-mysql:
     image: mysql:lts
     volumes:
       - "./mysql:/var/lib/mysql" #db persistance
@@ -34,7 +39,7 @@ services:
     ports:
       - "9999:80"
     environment:
-      - PMA_HOST=db
+      - PMA_HOST=db-mysql
 
 secrets:
   db_password:
