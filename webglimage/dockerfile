@@ -1,0 +1,5 @@
+FROM ubuntu/apache2
+COPY /SpinningAnky/Build /var/www/html/Build
+COPY /SpinningAnky/TemplateData /var/www/html/TemplateData
+COPY /SpinningAnky/index.html /var/www/html/
+EXPOSE 80

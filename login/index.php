@@ -8,31 +8,54 @@ $username_db = 'root';
 $password_db = 'groot';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username_db, $password_db);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch(PDOException $e) {
+
+    $pdo = new PDO("mysql:host=$host;
+        dbname=$dbname"
+        , $username_db, 
+        $password_db);
+    
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+}
+
+catch(PDOException $e) {
+    
     die("Connection failed: " . $e->getMessage());
+
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
     
-    // Database authentication
+    // Authentication
     try {
-        $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = ?");
+        
+        // prepare the query
+        $stmt = $pdo->prepare("SELECT id, name, password FROM Users WHERE name = ?");
+        
+        //pass the inserted username to the query 
         $stmt->execute([$username]);
+        
+        //store the query result in a variable
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        if ($user && password_verify($password, $user['password'])) {
+        //check if the user inserted the correct password for the user
+        if ($user && $password == $user['password']) {
+            
+            // 
             $_SESSION['logged_in'] = true;
             $_SESSION['username'] = $user['username'];
             $_SESSION['user_id'] = $user['id'];
-            header('Location: dashboard.php');
+            
+            # redirect 
+            header("Location: http://localhost:8080/webgl/");
             exit;
+
         } else {
-            $error = 'Invalid username or password';
+           $error = 'Invalid username or password';
         }
+
     } catch(PDOException $e) {
         $error = 'Database error occurred';
     }
