@@ -14,6 +14,8 @@ services:
       - "./login:/var/www/html"
     expose:
       - "80"
+    secrets:
+      - db_password
 
   webgl:
     image: meuritz/webgl_ankylosaurus
@@ -32,16 +34,6 @@ services:
     secrets:
       - db_password
 
-  #DEBUG SERVICE
-  db_management:
-    image: phpmyadmin:apache
-    ports:
-      - "9999:80"
-    environment:
-      - PMA_HOST=db-mysql
-
 secrets:
   db_password:
    file: "./db_pass.txt"
-
-

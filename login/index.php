@@ -5,7 +5,7 @@ session_start();
 $host = 'db-mysql';
 $dbname = 'test';
 $username_db = 'root';
-$password_db = 'groot';
+$password_db = rtrim(file_get_contents("/run/secrets/db_password"));
 
 try {
 
@@ -34,21 +34,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // prepare the query
         $stmt = $pdo->prepare("SELECT id, name, password FROM Users WHERE name = ?");
         
-        //pass the inserted username to the query 
+        // pass the inserted username to the query 
         $stmt->execute([$username]);
         
-        //store the query result in a variable
+        // store the query result in a variable
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        //check if the user inserted the correct password for the user
+        // check if the user inserted the correct password for the user
         if ($user && $password == $user['password']) {
             
-            // 
+            // change session status
             $_SESSION['logged_in'] = true;
             $_SESSION['username'] = $user['username'];
             $_SESSION['user_id'] = $user['id'];
             
-            # redirect 
+            // redirect 
             header("Location: http://localhost:8080/webgl/");
             exit;
 
